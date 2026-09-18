@@ -1,0 +1,40 @@
+name: Deploy the documentation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/**"
+      - "examples/**"
+      - "pygments_switch_cli/**"
+      - "mkdocs.yml"
+      - ".github/workflows/docs.yml"
+  workflow_dispatch:
+
+# The demo site renders every lexer, so it has to be built with the package
+# installed -- otherwise every fence falls back to unhighlighted text.
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: python -m pip install '.[docs]'
+      # A missing install does not fail the build, it silently renders every
+      # snippet as plain text, so check each lexer actually reached a page.
+      - name: Build and confirm every lexer rendered
+        run: |
+          mkdocs build --strict
+          for alias in eos nxos os10 nclu nvue sonic frr; do
+            if ! grep -rq "class=\"language-$alias highlight\"" site/; then
+              echo "no highlighted $alias block in the built site" >&2
+              exit 1
+            fi
+          done
+      - run: mkdocs gh-deploy --force

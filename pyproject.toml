@@ -1,0 +1,109 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pygments-switch-cli"
+dynamic = ["version"]
+description = "Pygments lexers for switch CLIs: Arista EOS, Dell OS10, Cumulus Linux, Cisco NX-OS, SONiC and FRRouting"
+readme = "README.md"
+requires-python = ">=3.9"
+license = "BSD-3-Clause"
+license-files = ["LICENSE"]
+authors = [{ name = "jeburks2", email = "jeburks2@asu.edu" }]
+keywords = [
+    "pygments",
+    "lexer",
+    "syntax-highlighting",
+    "mkdocs",
+    "sphinx",
+    "networking",
+    "arista",
+    "eos",
+    "dell",
+    "os10",
+    "cumulus",
+    "nvue",
+    "nxos",
+    "sonic",
+    "frrouting",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Plugins",
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
+    "Intended Audience :: Information Technology",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+    "Topic :: Documentation",
+    "Topic :: Software Development :: Documentation",
+    "Topic :: System :: Networking",
+    "Topic :: Text Processing :: Markup",
+    "Typing :: Typed",
+]
+dependencies = ["Pygments>=2.14"]
+
+[project.urls]
+Homepage = "https://github.com/jeburks2/pygments-switch-cli"
+Documentation = "https://jeburks2.github.io/pygments-switch-cli/"
+Repository = "https://github.com/jeburks2/pygments-switch-cli"
+Issues = "https://github.com/jeburks2/pygments-switch-cli/issues"
+Changelog = "https://github.com/jeburks2/pygments-switch-cli/blob/main/CHANGELOG.md"
+
+# Pygments discovers plugin lexers through this entry point group; the keys are
+# arbitrary but must be unique within the distribution.
+[project.entry-points."pygments.lexers"]
+arista_eos = "pygments_switch_cli:AristaEOSLexer"
+cisco_nxos = "pygments_switch_cli:CiscoNXOSLexer"
+dell_os10 = "pygments_switch_cli:DellOS10Lexer"
+cumulus_nclu = "pygments_switch_cli:CumulusNCLULexer"
+cumulus_nvue = "pygments_switch_cli:NVUELexer"
+sonic = "pygments_switch_cli:SONiCLexer"
+frrouting = "pygments_switch_cli:FRRLexer"
+
+[project.optional-dependencies]
+test = ["pytest>=7"]
+docs = ["mkdocs>=1.5", "mkdocs-material>=9.5", "pymdown-extensions>=10"]
+
+[tool.hatch.version]
+path = "pygments_switch_cli/__about__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["pygments_switch_cli"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/pygments_switch_cli",
+    "/tests",
+    "/examples",
+    "/docs",
+    "/mkdocs.yml",
+    "/README.md",
+    "/CHANGELOG.md",
+    "/CONTRIBUTING.md",
+    "/LICENSE",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+
+[tool.ruff]
+line-length = 88
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "W"]
+
+[tool.ruff.lint.isort]
+# ``conftest`` is the test suite's own helper module, not a dependency.
+known-first-party = ["pygments_switch_cli", "conftest"]

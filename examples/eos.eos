@@ -1,0 +1,77 @@
+! device: leaf1 (DCS-7050SX3-48YC8, EOS-4.29.2F)
+!
+transceiver qsfp default-mode 4x10G
+!
+service routing protocols model multi-agent
+!
+hostname leaf1
+dns domain example.net
+!
+spanning-tree mode mstp
+!
+vlan 100
+   name tenant-a
+!
+vrf instance TENANT-A
+!
+interface Ethernet1
+   description spine1:Ethernet1/1
+   mtu 9214
+   no switchport
+   ip address 10.1.1.1/31
+!
+interface Ethernet48
+   description server1:eth0
+   switchport access vlan 100
+   spanning-tree portfast
+!
+interface Loopback0
+   ip address 10.0.0.1/32
+!
+interface Management1
+   ip address 172.16.0.11/24
+!
+interface Vlan100
+   vrf TENANT-A
+   ip address virtual 10.100.0.1/24
+!
+interface Vxlan1
+   vxlan source-interface Loopback0
+   vxlan udp-port 4789
+   vxlan vlan 100 vni 10100
+   vxlan vrf TENANT-A vni 50001
+!
+ip routing
+ip routing vrf TENANT-A
+!
+ip prefix-list PL-LOOPBACKS
+   seq 10 permit 10.0.0.0/24 eq 32
+!
+route-map RM-CONN-2-BGP permit 10
+   match ip address prefix-list PL-LOOPBACKS
+!
+router bgp 65101
+   router-id 10.0.0.1
+   maximum-paths 4 ecmp 64
+   neighbor SPINE peer group
+   neighbor SPINE remote-as 65100
+   neighbor SPINE send-community extended
+   neighbor 10.1.1.0 peer group SPINE
+   redistribute connected route-map RM-CONN-2-BGP
+   !
+   vlan 100
+      rd 10.0.0.1:10100
+      route-target both 10100:10100
+      redistribute learned
+   !
+   address-family evpn
+      neighbor SPINE activate
+   !
+   address-family ipv4
+      no neighbor SPINE activate
+!
+management api http-commands
+   protocol https
+   no shutdown
+!
+end

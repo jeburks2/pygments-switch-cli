@@ -1,0 +1,61 @@
+site_name: pygments-switch-cli
+site_description: Pygments lexers for switch CLIs — Arista EOS, Dell OS10, Cumulus Linux, Cisco NX-OS, SONiC and FRRouting
+site_url: https://jeburks2.github.io/pygments-switch-cli/
+repo_url: https://github.com/jeburks2/pygments-switch-cli
+repo_name: jeburks2/pygments-switch-cli
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  features:
+    - content.code.copy
+    - navigation.sections
+    - navigation.top
+    - toc.follow
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+
+extra_css:
+  - stylesheets/extra.css
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets:
+      base_path: ["."]
+      check_paths: true
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+
+nav:
+  - Home: index.md
+  - Setup: setup.md
+  - Token scheme: tokens.md
+  - Platforms:
+      - Arista EOS: platforms/arista-eos.md
+      - Cisco NX-OS: platforms/cisco-nxos.md
+      - Dell OS10: platforms/dell-os10.md
+      - Cumulus Linux: platforms/cumulus.md
+      - SONiC: platforms/sonic.md
+      - FRRouting: platforms/frr.md

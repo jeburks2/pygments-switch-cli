@@ -1,0 +1,25 @@
+# Cumulus Linux 4.x -- configuration through NCLU (net) commands
+net add hostname leaf1
+net add interface swp1 description spine1:swp1
+net add interface swp1 mtu 9216
+net add interface swp1 ip address 10.1.1.1/31
+net add loopback lo ip address 10.0.0.1/32
+net add bridge bridge ports swp48
+net add bridge bridge vids 100,200
+net add interface swp48 bridge access 100
+net add vlan 100 ip address 10.100.0.1/24
+net add vlan 100 ip address-virtual 00:00:5e:00:01:01 10.100.0.254/24
+net add vxlan vni10100 vxlan id 10100
+net add vxlan vni10100 bridge access 100
+net add clag peer sys-mac 44:38:39:ff:40:94 interface peerlink primary
+net add clag port bond bond0 clag-id 1
+net add bgp autonomous-system 65101
+net add bgp router-id 10.0.0.1
+net add bgp neighbor swp1 interface remote-as external
+net add bgp ipv4 unicast network 10.0.0.1/32
+net add bgp l2vpn evpn neighbor swp1 activate
+net add bgp l2vpn evpn advertise-all-vni
+net del bgp ipv4 unicast neighbor swp1 activate
+net add time zone America/Phoenix
+net pending
+net commit

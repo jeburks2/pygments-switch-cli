@@ -1,0 +1,84 @@
+!Command: show running-config
+!Running configuration last done at: Tue Sep 17 08:12:03 2026
+version 10.2(5) Bios:version 05.47
+switchname leaf1
+vdc leaf1 id 1
+  limit-resource vlan minimum 16 maximum 4094
+!
+feature nxapi
+feature bgp
+feature interface-vlan
+feature vn-segment-vlan-based
+feature lacp
+feature vpc
+feature nv overlay
+!
+nv overlay evpn
+!
+vlan 100
+  name tenant-a
+  vn-segment 10100
+!
+vrf context TENANT-A
+  vni 50001
+  rd auto
+  address-family ipv4 unicast
+    route-target both auto evpn
+!
+vpc domain 1
+  peer-switch
+  peer-keepalive destination 172.16.0.12 source 172.16.0.11
+  peer-gateway
+!
+interface Ethernet1/1
+  description spine1:Ethernet1/1
+  mtu 9216
+  no switchport
+  ip address 10.1.1.1/31
+  no shutdown
+!
+interface Ethernet1/48
+  description server1:eth0
+  switchport
+  switchport access vlan 100
+  spanning-tree port type edge
+  no shutdown
+!
+interface Vlan100
+  no shutdown
+  vrf member TENANT-A
+  ip address 10.100.0.2/24
+  fabric forwarding mode anycast-gateway
+!
+interface loopback0
+  ip address 10.0.0.1/32
+!
+interface nve1
+  no shutdown
+  host-reachability protocol bgp
+  source-interface loopback0
+  member vni 10100
+    ingress-replication protocol bgp
+  member vni 50001 associate-vrf
+!
+interface mgmt0
+  vrf member management
+  ip address 172.16.0.11/24
+!
+router bgp 65101
+  router-id 10.0.0.1
+  address-family ipv4 unicast
+    redistribute direct route-map ALL
+    maximum-paths 4
+  address-family l2vpn evpn
+  neighbor 10.1.1.0
+    remote-as 65100
+    address-family ipv4 unicast
+    address-family l2vpn evpn
+      send-community extended
+!
+evpn
+  vni 10100 l2
+    rd auto
+    route-target import auto
+    route-target export auto

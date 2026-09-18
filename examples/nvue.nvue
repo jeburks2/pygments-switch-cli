@@ -1,0 +1,26 @@
+# Cumulus Linux 5.x -- configuration through NVUE (nv) commands
+nv set system hostname leaf1
+nv set interface lo ip address 10.0.0.1/32
+nv set interface swp1 description spine1:swp1
+nv set interface swp1 link mtu 9216
+nv set interface swp1 ip address 10.1.1.1/31
+nv set interface swp49-50 bond member bond0
+nv set interface swp48 bridge domain br_default access 100
+nv set bridge domain br_default vlan 100
+nv set bridge domain br_default vlan 100 vni 10100
+nv set nve vxlan source address 10.0.0.1
+nv set nve vxlan arp-nd-suppress on
+nv set evpn enable on
+nv set vrf default router bgp autonomous-system 65101
+nv set vrf default router bgp router-id 10.0.0.1
+nv set vrf default router bgp neighbor swp1 peer-group SPINE
+nv set vrf default router bgp peer-group SPINE remote-as external
+nv set vrf default router bgp address-family l2vpn-evpn enable on
+nv set vrf TENANT-A evpn vni 50001
+nv set mlag backup 172.16.0.12
+nv set mlag mac-address 44:38:39:ff:40:94
+nv set mlag peer-ip linklocal
+nv unset interface swp1 ip address
+nv config diff
+nv config apply
+nv config save

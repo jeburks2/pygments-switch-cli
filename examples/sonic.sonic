@@ -1,0 +1,25 @@
+# SONiC -- configuration through the config utility
+sudo config hostname leaf1
+sudo config interface ip add Ethernet0 10.1.1.1/31
+sudo config interface mtu Ethernet0 9100
+sudo config interface startup Ethernet0
+sudo config vlan add 100
+sudo config vlan member add -u 100 Ethernet4
+sudo config interface ip add Vlan100 10.100.0.1/24
+sudo config portchannel add PortChannel001 --min-links 2 --fallback enable
+sudo config portchannel member add PortChannel001 Ethernet8
+sudo config vrf add Vrf-TENANT-A
+sudo config interface vrf bind Vlan100 Vrf-TENANT-A
+sudo config bgp shutdown neighbor 10.1.1.0
+sudo config feature state bgp enabled
+sudo config save -y
+#
+show interfaces status
+show interfaces counters
+show ip bgp summary
+show vlan brief
+show runningconfiguration bgp
+sonic-clear counters
+sudo sonic-cfggen -d --print-data
+#
+admin@leaf1:~$ vtysh -c 'show bgp l2vpn evpn summary'
