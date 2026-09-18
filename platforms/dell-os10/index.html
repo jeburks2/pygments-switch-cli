@@ -618,7 +618,9 @@
 <p>OS10 writes <code>interface ethernet1/1/1</code> in its running configuration but accepts
 <code>interface ethernet 1/1/1</code> interactively, and both spellings are highlighted
 as interface names. Ranges work too, which matters for
-<code>discovery-interface ethernet1/1/29-1/1/30</code> and <code>interface range</code>.</p>
+<code>discovery-interface ethernet1/1/29-1/1/30</code> and <code>interface range</code>, including
+the comma separated lists and the <code>Po</code> abbreviation that OS10 expands for
+you: <code>interface range Po 1-19,31-32</code>.</p>
 <p>VLT (<code>vlt-domain</code>, <code>vlt-port-channel</code>, <code>vlt-mac</code>), <code>virtual-network</code> and
 <code>interface breakout</code> are the OS10-specific vocabulary, and the first two drive
 <code>analyse_text</code>.</p>
