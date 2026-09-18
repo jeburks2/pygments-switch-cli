@@ -841,33 +841,46 @@ everything after it as options and values.</p>
 </span></code></pre></div>
 <p>The <code>vlan</code> on line 1 is a context keyword (<code>.kn</code>); the <code>vlan</code> on line 5 is an
 option keyword (<code>.nb</code>). Same word, different token, because of where it sits.</p>
+<p><code>port-channel</code> is read the same way. Followed immediately by a number it
+names an interface (<code>.nf</code>); on its own it is the option keyword that
+configures the group (<code>.nb</code>):</p>
+<div class="language-eos highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">interface</span><span class="w"> </span><span class="nf">Port-Channel10</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">   </span><span class="nb">port-channel</span><span class="w"> </span><span class="nb">min-links</span><span class="w"> </span><span class="mi">1</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="c1">!</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="k">show</span><span class="w"> </span><span class="nb">interface</span><span class="w"> </span><span class="nf">port-channel 10</span>
+</span></code></pre></div>
+<p>Lines 1 and 4 name the same interface, once glued and once spaced. Line 2
+configures it, so <code>port-channel</code> there is an option keyword. The spaced
+spelling counts as a name only after <code>interface</code>, <code>interfaces</code> or <code>range</code>:
+without that anchor, the <code>vlan 100</code> in <code>switchport access vlan 100</code> would
+look exactly like one too.</p>
 <h2 id="pasted-sessions">Pasted sessions<a class="headerlink" href="#pasted-sessions" title="Permanent link">&para;</a></h2>
 <p>Prompts are recognized in both the network and Linux styles, so a snippet
 copied straight out of a terminal reads correctly without editing:</p>
-<div class="language-eos highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>leaf1<span class="c1">#show interfaces Ethernet1 status</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>leaf1<span class="p">(</span>config<span class="p">)</span><span class="c1">#interface Ethernet1</span>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>leaf1<span class="p">(</span>config-if-Et1<span class="p">)</span><span class="c1">#no shutdown</span>
+<div class="language-eos highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="gp">leaf1#</span><span class="k">show</span><span class="w"> </span><span class="nb">interfaces</span><span class="w"> </span><span class="nf">Ethernet1</span><span class="w"> </span>status
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="gp">leaf1(config)#</span><span class="kn">interface</span><span class="w"> </span><span class="nf">Ethernet1</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="gp">leaf1(config-if-Et1)#</span><span class="kr">no</span><span class="w"> </span><span class="nb">shutdown</span>
 </span></code></pre></div>
-<div class="language-sonic highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="gp">admin@leaf1:~$</span><span class="w"> </span><span class="kn">show</span><span class="w"> </span><span class="nb">interfaces</span><span class="w"> </span><span class="nb">status</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="gp">admin@leaf1:~$</span><span class="w"> </span><span class="nb">sudo</span><span class="w"> </span><span class="kn">config</span><span class="w"> </span><span class="k">save</span><span class="w"> </span><span class="na">-y</span>
+<div class="language-sonic highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="gp">admin@leaf1:~$</span><span class="w"> </span><span class="kn">show</span><span class="w"> </span><span class="nb">interfaces</span><span class="w"> </span><span class="nb">status</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="gp">admin@leaf1:~$</span><span class="w"> </span><span class="nb">sudo</span><span class="w"> </span><span class="kn">config</span><span class="w"> </span><span class="k">save</span><span class="w"> </span><span class="na">-y</span>
 </span></code></pre></div>
 <h2 id="recoloring">Recoloring<a class="headerlink" href="#recoloring" title="Permanent link">&para;</a></h2>
 <p>Any Pygments style works unchanged. To adjust one token, add a stylesheet
 rather than writing a whole style — the class names above are stable:</p>
-<div class="language-css highlight"><span class="filename">docs/stylesheets/extra.css</span><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c">/* Interface names are what readers scan a config for. */</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="p">.</span><span class="nc">highlight</span><span class="w"> </span><span class="p">.</span><span class="nc">nf</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">  </span><span class="k">color</span><span class="p">:</span><span class="w"> </span><span class="mh">#e36209</span><span class="p">;</span>
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">  </span><span class="k">font-weight</span><span class="p">:</span><span class="w"> </span><span class="mi">700</span><span class="p">;</span>
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="p">}</span>
-</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>
-</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="c">/* Push prompts into the background of a pasted session. */</span>
-</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="p">.</span><span class="nc">highlight</span><span class="w"> </span><span class="p">.</span><span class="nc">gp</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">  </span><span class="k">opacity</span><span class="p">:</span><span class="w"> </span><span class="mf">0.6</span><span class="p">;</span>
-</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="w">  </span><span class="k">user-select</span><span class="p">:</span><span class="w"> </span><span class="kc">none</span><span class="p">;</span>
-</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="p">}</span>
+<div class="language-css highlight"><span class="filename">docs/stylesheets/extra.css</span><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c">/* Interface names are what readers scan a config for. */</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="p">.</span><span class="nc">highlight</span><span class="w"> </span><span class="p">.</span><span class="nc">nf</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">  </span><span class="k">color</span><span class="p">:</span><span class="w"> </span><span class="mh">#e36209</span><span class="p">;</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">  </span><span class="k">font-weight</span><span class="p">:</span><span class="w"> </span><span class="mi">700</span><span class="p">;</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="p">}</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="c">/* Push prompts into the background of a pasted session. */</span>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="p">.</span><span class="nc">highlight</span><span class="w"> </span><span class="p">.</span><span class="nc">gp</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">  </span><span class="k">opacity</span><span class="p">:</span><span class="w"> </span><span class="mf">0.6</span><span class="p">;</span>
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="w">  </span><span class="k">user-select</span><span class="p">:</span><span class="w"> </span><span class="kc">none</span><span class="p">;</span>
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="p">}</span>
 </span></code></pre></div>
-<div class="language-yaml highlight"><span class="filename">mkdocs.yml</span><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nt">extra_css</span><span class="p">:</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">stylesheets/extra.css</span>
+<div class="language-yaml highlight"><span class="filename">mkdocs.yml</span><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nt">extra_css</span><span class="p">:</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">stylesheets/extra.css</span>
 </span></code></pre></div>
 <p>This site uses exactly that, minus the color change.</p>
 <h2 id="what-stays-unhighlighted">What stays unhighlighted<a class="headerlink" href="#what-stays-unhighlighted" title="Permanent link">&para;</a></h2>
