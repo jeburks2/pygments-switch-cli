@@ -1,0 +1,15 @@
+/* The lexers in this package emit Name.Function for interface and port names.
+   Material's default theme colors that the same as a function call, which is
+   fine, but interface names are the thing readers scan a config for, so the
+   demo site gives them a little more weight. Delete this file's rules to see
+   the stock Material colors. */
+.highlight .nf {
+  font-weight: 600;
+}
+
+/* Device prompts in a pasted session: present but receding, so the commands
+   after them stay the focus. */
+.highlight .gp {
+  opacity: 0.6;
+  user-select: none;
+}
