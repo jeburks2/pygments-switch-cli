@@ -7,6 +7,12 @@ or misspelled.
 
 from __future__ import annotations
 
+import os
+import pathlib
+import stat
+import subprocess
+import sys
+import sysconfig
 from importlib.metadata import distribution
 
 import pytest
@@ -98,6 +104,60 @@ def test_base_class_is_not_registered():
     assert not SwitchCLILexer.aliases
     assert SwitchCLILexer not in ALL_LEXERS
     assert SwitchCLILexer not in {ep.load() for ep in declared_entry_points()}
+
+
+def hidden_pth_files():
+    """Editable-install ``.pth`` files that macOS has flagged hidden.
+
+    Since Python 3.13, ``site`` skips a ``.pth`` file carrying the macOS
+    ``UF_HIDDEN`` flag, so an editable install that picks the flag up stops
+    putting the project on ``sys.path`` -- silently, and only for processes
+    that do not already have the source directory there.
+    """
+    purelib = pathlib.Path(sysconfig.get_paths()["purelib"])
+    return [pth for pth in sorted(purelib.glob("*.pth"))
+            if getattr(pth.stat(), "st_flags", 0)
+            & getattr(stat, "UF_HIDDEN", 0)]
+
+
+def test_aliases_resolve_outside_the_project_directory(tmp_path):
+    """The check the tests above cannot make, because they run in the source.
+
+    Every other test here imports this package from the working directory,
+    which during a test run is the source tree, so they pass whether or not
+    the installed distribution is importable.  MkDocs, Sphinx and pygmentize
+    are console scripts: they run with the script's own directory on
+    ``sys.path``, never the project, and reach the lexers only through the
+    install.  When that install is unimportable they do not fail -- Pygments
+    falls back to the plain text lexer and every snippet on the site renders
+    grey, which is indistinguishable from a lexer that matched nothing.
+    """
+    script = tmp_path / "resolve.py"
+    script.write_text(
+        "from pygments.lexers import get_lexer_by_name\n"
+        "print(type(get_lexer_by_name('eos')).__name__)\n"
+    )
+    # PYTHONPATH would put the source tree back on the path and hide exactly
+    # the breakage this test is looking for.
+    env = {k: v for k, v in os.environ.items() if k != "PYTHONPATH"}
+    result = subprocess.run([sys.executable, str(script)], cwd=tmp_path,
+                            env=env, capture_output=True, text=True)
+
+    if result.returncode != 0 and hidden_pth_files():
+        pytest.skip(
+            "the editable install in this environment is invisible to "
+            f"console scripts: {hidden_pth_files()[0].name} carries the "
+            "macOS hidden flag, which site.py has skipped since Python 3.13. "
+            "Clear it with `chflags nohidden` or run tools with "
+            "PYTHONPATH=$PWD; see CONTRIBUTING.md."
+        )
+
+    assert result.returncode == 0, (
+        "the installed distribution is not importable outside the project "
+        "directory, so MkDocs and pygmentize cannot load these lexers:\n"
+        f"{result.stderr}"
+    )
+    assert "AristaEOSLexer" in result.stdout
 
 
 def test_version_is_importable():

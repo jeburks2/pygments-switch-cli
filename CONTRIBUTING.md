@@ -16,6 +16,38 @@ The lexers reach MkDocs and Sphinx through a `pygments.lexers` entry point,
 which only exists once the distribution is installed — importable is not
 enough. After editing `pyproject.toml`, reinstall.
 
+### If every snippet renders grey
+
+`mkdocs`, `pygmentize` and `sphinx-build` are console scripts: they run with
+their own directory on `sys.path`, never the project, so they load these
+lexers only through the installed distribution. When that install is not
+importable they do not fail. Pygments falls back to its plain text lexer and
+the whole site renders unhighlighted, which looks exactly like a lexer that
+matched nothing. `pytest` does not notice either, because it imports the
+package from the working directory — `test_aliases_resolve_outside_the_project_directory`
+is the one test that runs outside it and does.
+
+On macOS the usual cause is the editable install itself. `pip install -e .`
+writes `site-packages/_editable_impl_pygments_switch_cli.pth`, and if that
+file picks up the macOS `hidden` flag, `site.py` skips it — Python 3.13 and
+later ignore hidden `.pth` files deliberately. Some managed Macs re-apply the
+flag within seconds of it being cleared.
+
+```console
+ls -lO .venv/lib/python*/site-packages/*.pth   # look for "hidden"
+chflags nohidden .venv/lib/python*/site-packages/*.pth
+```
+
+If the flag keeps coming back, put the project on the path for the command
+that needs it instead, which needs no install at all:
+
+```console
+PYTHONPATH=$PWD mkdocs serve
+```
+
+A plain `pip install .` also works, at the cost of reinstalling after every
+edit to a lexer.
+
 ## Adding a platform
 
 1. Add a module with a `SwitchCLILexer` subclass. `pygments_switch_cli/arista.py`

@@ -8,6 +8,15 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- A test that resolves an alias in a subprocess outside the project
+  directory, which is the only place the rest of the suite does not look.
+  Every other test imports the package from the source tree, so they pass
+  even when the installed distribution is unimportable and MkDocs is
+  rendering every snippet with the plain text lexer.
+- A CONTRIBUTING section for that failure, including the macOS editable
+  install whose `.pth` file carries the hidden flag that `site.py` skips from
+  Python 3.13 on.
+
 - Link aggregation vocabulary, which the lexers knew only as part of an
   interface name: `port-channel`, `channel-group`, `min-links`,
   `port-priority`, `fallback`, `interfaces` and `timeout` are shared words
