@@ -16,6 +16,17 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - A CONTRIBUTING section for that failure, including the macOS editable
   install whose `.pth` file carries the hidden flag that `site.py` skips from
   Python 3.13 on.
+- `po` as an OS10 interface type. The CLI expands it to `port-channel`, so it
+  is what runbooks are written with, but only Arista, Cisco and FRR knew the
+  abbreviation.
+
+### Fixed
+
+- An interface range written as a list of spans -- `interface range Po
+  1-19,31-32`, `interface Ethernet1-4,7` -- was highlighted up to the first
+  comma, and the rest fell out of the name as a separate number. A VLAN list
+  such as `switchport trunk allowed vlan 100,200-300` is still a number,
+  because the spaced pattern only applies after an `interface` keyword.
 
 - Link aggregation vocabulary, which the lexers knew only as part of an
   interface name: `port-channel`, `channel-group`, `min-links`,

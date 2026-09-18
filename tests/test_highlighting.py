@@ -156,7 +156,8 @@ def test_eos_interface_context():
 @pytest.mark.parametrize("name", ["Ethernet1", "Et3/1", "Po10", "Vlan4094",
                                   "Vxlan1", "Loopback0", "Management1/1",
                                   "Ethernet1.100", "Recirc-Channel501",
-                                  "Port-Channel10", "Port-Channel10.100"])
+                                  "Port-Channel10", "Port-Channel10.100",
+                                  "Ethernet1-4,7", "Po1-4,7"])
 def test_eos_interface_names(name):
     text = f"  no switchport\n  {name}\n"
     assert token_for(AristaEOSLexer(), text, name) is Name.Function
@@ -228,11 +229,23 @@ def test_nxos_lacp_options():
 
 @pytest.mark.parametrize("name", ["ethernet1/1/1", "ethernet 1/1/1",
                                   "port-channel10", "port-channel 10",
-                                  "vlan100", "mgmt1/1/1",
+                                  "po10", "po 10", "vlan100", "mgmt1/1/1",
                                   "virtual-network100"])
 def test_os10_accepts_both_interface_spellings(name):
     """OS10 writes ``ethernet1/1/1`` but accepts ``ethernet 1/1/1``."""
     assert token_for(DellOS10Lexer(), f"interface {name}\n", name) is Name.Function
+
+
+def test_os10_port_channel_range_with_commas():
+    """``interface range Po 1-19,31-32``, as an OS10 runbook writes it.
+
+    The CLI expands ``Po`` to ``port-channel``, and a range is a list of
+    spans, not one span.
+    """
+    lexer = DellOS10Lexer()
+    text = "interface range Po 1-19,31-32\n"
+    assert token_for(lexer, text, "range") is Name.Builtin
+    assert token_for(lexer, text, "Po 1-19,31-32") is Name.Function
 
 
 def test_os10_vlt_domain_is_a_context():

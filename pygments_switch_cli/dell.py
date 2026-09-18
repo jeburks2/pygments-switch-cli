@@ -22,10 +22,12 @@ __all__ = ["DellOS10Lexer"]
 
 #: Interface types.  OS10 writes ``ethernet1/1/1`` in its running
 #: configuration but accepts ``ethernet 1/1/1`` interactively; the
-#: ``interface`` context rule below handles the spaced form.
+#: ``interface`` context rule below handles the spaced form.  ``po`` is the
+#: abbreviation the CLI expands to ``port-channel``, and the form runbooks are
+#: written in: ``interface range Po 1-19,31-32``.
 INTERFACES = (
-    "ethernet", "mgmt", "port-channel", "vlan", "loopback", "virtual-network",
-    "nve", "tunnel", "vlt-port-channel", "breakout",
+    "ethernet", "mgmt", "po", "port-channel", "vlan", "loopback",
+    "virtual-network", "nve", "tunnel", "vlt-port-channel", "breakout",
 )
 
 #: Commands that enter a configuration context.

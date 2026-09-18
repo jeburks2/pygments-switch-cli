@@ -199,11 +199,14 @@ def interface_re(names: Iterable[str], bare: Iterable[str] = ()) -> str:
     ``peerlink``.  No space is permitted between the prefix and the number:
     that is what keeps the option keyword in ``switchport access vlan 100``
     from being mistaken for an interface name.
+
+    The trailing group is a list of spans rather than a single one, because a
+    range is written ``Ethernet1-4,7`` as readily as ``Ethernet1-4``.
     """
     parts = [
         rf"(?:{_alternation(names)})"
         r"\d+(?:s\d+)?(?:[/:]\d+(?:s\d+)?)*(?:\.\d+)?"
-        r"(?:-\d+(?:[/:]\d+)*)?"
+        r"(?:[-,]\d+(?:[/:]\d+)*)*"
     ]
     if bare:
         parts.append(rf"(?:{_alternation(bare)})(?:\.\d+)?")
@@ -223,7 +226,7 @@ def _spaced_interface(names: Iterable[str], bare: Iterable[str] = ()) -> str:
     bare_alt = rf"|(?:{_alternation(bare)})(?:\.\d+)?" if bare else ""
     return (
         rf"(?:(?:{alt})[ \t]?\d+(?:s\d+)?(?:[/:]\d+(?:s\d+)?)*(?:\.\d+)?"
-        rf"(?:-[\d/:]+)?){bare_alt}"
+        rf"(?:[-,][\d/:]+)*){bare_alt}"
     )
 
 
