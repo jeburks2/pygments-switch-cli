@@ -857,9 +857,9 @@ look exactly like one too.</p>
 <h2 id="pasted-sessions">Pasted sessions<a class="headerlink" href="#pasted-sessions" title="Permanent link">&para;</a></h2>
 <p>Prompts are recognized in both the network and Linux styles, so a snippet
 copied straight out of a terminal reads correctly without editing:</p>
-<div class="language-eos highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="gp">leaf1#</span><span class="k">show</span><span class="w"> </span><span class="nb">interfaces</span><span class="w"> </span><span class="nf">Ethernet1</span><span class="w"> </span>status
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="gp">leaf1(config)#</span><span class="kn">interface</span><span class="w"> </span><span class="nf">Ethernet1</span>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="gp">leaf1(config-if-Et1)#</span><span class="kr">no</span><span class="w"> </span><span class="nb">shutdown</span>
+<div class="language-eos highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>leaf1<span class="c1">#show interfaces Ethernet1 status</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>leaf1<span class="p">(</span>config<span class="p">)</span><span class="c1">#interface Ethernet1</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>leaf1<span class="p">(</span>config-if-Et1<span class="p">)</span><span class="c1">#no shutdown</span>
 </span></code></pre></div>
 <div class="language-sonic highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="gp">admin@leaf1:~$</span><span class="w"> </span><span class="kn">show</span><span class="w"> </span><span class="nb">interfaces</span><span class="w"> </span><span class="nb">status</span>
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="gp">admin@leaf1:~$</span><span class="w"> </span><span class="nb">sudo</span><span class="w"> </span><span class="kn">config</span><span class="w"> </span><span class="k">save</span><span class="w"> </span><span class="na">-y</span>
