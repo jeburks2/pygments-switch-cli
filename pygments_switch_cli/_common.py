@@ -99,15 +99,12 @@ MAC = (
 #: correctly.  Covers ``leaf1#``, ``leaf1(config-if-Et1)#`` and the Linux-style
 #: ``cumulus@leaf01:mgmt:~$`` prompt used by Cumulus Linux and SONiC.
 #:
-#: The trailing lookahead allows the command to follow the prompt character
-#: with no space, which is how a device echoes it back: ``leaf1#show version``.
-#: A letter is as permissive as it gets -- every command in these CLIs starts
-#: with one -- because without some restriction any first word ending in ``#``
-#: would read as a prompt.  Requiring a space, as this once did, left the
-#: whole echoed line to the ``#`` comment rule instead.
+#: A space or the end of the line has to follow the prompt character.  The
+#: cost is that ``leaf1#show version``, the form a device echoes, reads as a
+#: comment; the alternative is worse, because free text such as a banner body
+#: turns any first word ending in ``#`` or ``>`` into a prompt.
 PROMPT = (
-    r"^(?:[\w.-]+@[\w.-]+:\S*[#$]|[\w.-]+(?:\([^)]*\))?[>#])"
-    r"(?=[ \t]|$|[A-Za-z])"
+    r"^(?:[\w.-]+@[\w.-]+:\S*[#$]|[\w.-]+(?:\([^)]*\))?[>#])(?=[ \t]|$)"
 )
 
 # --------------------------------------------------------------------------

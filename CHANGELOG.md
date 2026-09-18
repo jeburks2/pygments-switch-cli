@@ -6,8 +6,6 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-## [0.1.1] - 2026-09-18
-
 ### Added
 
 - Link aggregation vocabulary, which the lexers knew only as part of an
@@ -35,11 +33,6 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   number -- `show interface port-channel 10`,
   `show running-config interface ethernet 1/1` -- is highlighted as an
   interface name. Only the line-initial form was recognized.
-- A pasted prompt with no space after it -- `leaf1#show version`, the form a
-  device echoes back and the form the token documentation shows -- left the
-  prompt as plain text and the whole command as a `#` comment. The prompt
-  pattern required a space or the end of the line after the prompt
-  character; it now also accepts the first letter of a command.
 
 ## [0.1.0] - 2026-09-17
 
@@ -55,6 +48,5 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `analyse_text` implementations so `guess_lexer` can identify a snippet from
   platform-specific markers such as `frr version` or `vlt-domain`.
 
-[Unreleased]: https://github.com/jeburks2/pygments-switch-cli/compare/v0.1.1...HEAD
-[0.1.1]: https://github.com/jeburks2/pygments-switch-cli/compare/v0.1.0...v0.1.1
+[Unreleased]: https://github.com/jeburks2/pygments-switch-cli/compare/v0.1.0...HEAD
 [0.1.0]: https://github.com/jeburks2/pygments-switch-cli/releases/tag/v0.1.0

@@ -78,21 +78,6 @@ def test_prompts_in_pasted_sessions(lexer, prompt):
     assert token_for(lexer, f"{prompt} show version\n", prompt) is Generic.Prompt
 
 
-@pytest.mark.parametrize("prompt", ["leaf1#", "leaf1(config-if-Et1)#",
-                                    "leaf1>", "admin@leaf1:~$"])
-def test_prompts_with_no_space_before_the_command(lexer, prompt):
-    """A device echoes the command straight after the prompt character.
-
-    The ``#`` form is the one that mattered: with the prompt unrecognized,
-    the comment rule claimed ``#show version`` and greyed out the command.
-    """
-    text = f"{prompt}show version\n"
-    assert token_for(lexer, text, prompt) is Generic.Prompt
-    comments = [value for token, value in significant(lexer, text)
-                if token is Comment.Single]
-    assert not comments, f"{lexer.name} read the command as a comment"
-
-
 @pytest.mark.parametrize("keyword", ["router-id", "route-map", "maximum-paths",
                                      "remote-as", "next-hop-self"])
 def test_hyphenated_keywords_stay_whole(lexer, keyword):
