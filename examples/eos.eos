@@ -25,11 +25,30 @@ interface Ethernet48
    switchport access vlan 100
    spanning-tree portfast
 !
+interface Ethernet49/1
+   description leaf2:Ethernet49/1
+   channel-group 4094 mode active
+!
+interface Ethernet50/1
+   description leaf2:Ethernet50/1
+   channel-group 4094 mode active
+!
 interface Loopback0
    ip address 10.0.0.1/32
 !
 interface Management1
    ip address 172.16.0.11/24
+!
+interface Port-Channel10
+   description server2 lag
+   switchport access vlan 100
+   port-channel min-links 1
+   mlag 10
+!
+interface Port-Channel4094
+   description mlag peer-link
+   switchport mode trunk
+   switchport trunk group MLAGPEER
 !
 interface Vlan100
    vrf TENANT-A

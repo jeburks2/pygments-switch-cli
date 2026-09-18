@@ -78,6 +78,21 @@ def test_prompts_in_pasted_sessions(lexer, prompt):
     assert token_for(lexer, f"{prompt} show version\n", prompt) is Generic.Prompt
 
 
+@pytest.mark.parametrize("prompt", ["leaf1#", "leaf1(config-if-Et1)#",
+                                    "leaf1>", "admin@leaf1:~$"])
+def test_prompts_with_no_space_before_the_command(lexer, prompt):
+    """A device echoes the command straight after the prompt character.
+
+    The ``#`` form is the one that mattered: with the prompt unrecognized,
+    the comment rule claimed ``#show version`` and greyed out the command.
+    """
+    text = f"{prompt}show version\n"
+    assert token_for(lexer, text, prompt) is Generic.Prompt
+    comments = [value for token, value in significant(lexer, text)
+                if token is Comment.Single]
+    assert not comments, f"{lexer.name} read the command as a comment"
+
+
 @pytest.mark.parametrize("keyword", ["router-id", "route-map", "maximum-paths",
                                      "remote-as", "next-hop-self"])
 def test_hyphenated_keywords_stay_whole(lexer, keyword):
@@ -89,6 +104,56 @@ def test_hyphenated_keywords_stay_whole(lexer, keyword):
 
 def test_hostname_takes_a_variable_name(lexer):
     assert token_for(lexer, "hostname leaf1\n", "leaf1") is Name.Variable
+
+
+def test_link_aggregation_vocabulary(lexer):
+    """A bare ``port-channel`` is an option keyword, not an interface name.
+
+    Every platform here aggregates links, and the words that configure the
+    group -- as opposed to the ones that name it -- are shared vocabulary.
+    """
+    text = "   port-channel min-links 2\n"
+    assert token_for(lexer, text, "port-channel") is Name.Builtin
+    assert token_for(lexer, text, "min-links") is Name.Builtin
+
+
+def test_channel_group_membership(lexer):
+    text = "   channel-group 10 mode active\n"
+    assert token_for(lexer, text, "channel-group") is Name.Builtin
+    assert token_for(lexer, text, "10") is Number.Integer
+    assert token_for(lexer, text, "active") is Keyword.Constant
+
+
+def test_lacp_rate_values_are_constants(lexer):
+    """``fast``/``slow``/``normal`` are values, like ``active`` above."""
+    assert token_for(lexer, "   lacp rate fast\n", "fast") is Keyword.Constant
+
+
+def test_vlan_option_is_not_an_interface_reference(lexer):
+    """The spaced interface pattern must not swallow ``vlan 100``.
+
+    ``vlan`` is an interface type on most of these platforms, which is why
+    the pattern that allows ``port-channel 10`` is confined to the position
+    after an ``interface`` keyword.
+    """
+    text = "   switchport access vlan 100\n"
+    assert token_for(lexer, text, "vlan") is Name.Builtin
+    assert token_for(lexer, text, "100") is Number.Integer
+
+
+@pytest.mark.parametrize("lexer_class", [AristaEOSLexer, CiscoNXOSLexer,
+                                         DellOS10Lexer, FRRLexer],
+                         ids=lambda cls: cls.aliases[0])
+def test_spaced_interface_reference_in_a_line_tail(lexer_class):
+    """``show interface port-channel 10`` names an interface as well.
+
+    The spaced spelling turns up away from the start of a line, where the
+    ``interface`` keyword is an option rather than a context.
+    """
+    lexer = lexer_class()
+    text = "show interface port-channel 10\n"
+    assert token_for(lexer, text, "interface") is Name.Builtin
+    assert token_for(lexer, text, "port-channel 10") is Name.Function
 
 
 # --------------------------------------------------------------------------
@@ -105,10 +170,20 @@ def test_eos_interface_context():
 
 @pytest.mark.parametrize("name", ["Ethernet1", "Et3/1", "Po10", "Vlan4094",
                                   "Vxlan1", "Loopback0", "Management1/1",
-                                  "Ethernet1.100", "Recirc-Channel501"])
+                                  "Ethernet1.100", "Recirc-Channel501",
+                                  "Port-Channel10", "Port-Channel10.100"])
 def test_eos_interface_names(name):
     text = f"  no switchport\n  {name}\n"
     assert token_for(AristaEOSLexer(), text, name) is Name.Function
+
+
+def test_eos_port_channel_load_balance_fields():
+    """A global ``port-channel`` command, where no interface is named."""
+    lexer = AristaEOSLexer()
+    text = "port-channel load-balance fields mac dst-mac\n"
+    assert token_for(lexer, text, "port-channel") is Name.Builtin
+    assert token_for(lexer, text, "fields") is Name.Builtin
+    assert token_for(lexer, text, "dst-mac") is Name.Builtin
 
 
 def test_eos_vlan_is_a_context_keyword_at_the_start_of_a_line():
@@ -146,9 +221,19 @@ def test_nxos_feature_lines():
 
 
 @pytest.mark.parametrize("name", ["Ethernet1/1", "Eth1/1", "mgmt0", "nve1",
-                                  "port-channel10", "Vlan100", "loopback0"])
+                                  "port-channel10", "Po10", "Vlan100",
+                                  "loopback0", "san-port-channel1"])
 def test_nxos_interface_names(name):
     assert token_for(CiscoNXOSLexer(), f"interface {name}\n", name) is Name.Function
+
+
+def test_nxos_lacp_options():
+    lexer = CiscoNXOSLexer()
+    text = "  channel-group 10 force mode active\n"
+    assert token_for(lexer, text, "force") is Name.Builtin
+    text = "port-channel load-balance src-dst ip-l4port rotate 4\n"
+    assert token_for(lexer, text, "src-dst") is Name.Builtin
+    assert token_for(lexer, text, "ip-l4port") is Name.Builtin
 
 
 # --------------------------------------------------------------------------
@@ -157,7 +242,8 @@ def test_nxos_interface_names(name):
 
 
 @pytest.mark.parametrize("name", ["ethernet1/1/1", "ethernet 1/1/1",
-                                  "port-channel10", "vlan100", "mgmt1/1/1",
+                                  "port-channel10", "port-channel 10",
+                                  "vlan100", "mgmt1/1/1",
                                   "virtual-network100"])
 def test_os10_accepts_both_interface_spellings(name):
     """OS10 writes ``ethernet1/1/1`` but accepts ``ethernet 1/1/1``."""
@@ -267,3 +353,9 @@ def test_frr_exit_commands():
 
 def test_frr_bare_loopback():
     assert token_for(FRRLexer(), "interface lo\n", "lo") is Name.Function
+
+
+@pytest.mark.parametrize("name", ["bond0", "po10", "port-channel10"])
+def test_frr_bond_names(name):
+    """FRR runs on hosts, where a LAG is a bond, and on vendor platforms."""
+    assert token_for(FRRLexer(), f"interface {name}\n", name) is Name.Function

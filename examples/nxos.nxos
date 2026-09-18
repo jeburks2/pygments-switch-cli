@@ -37,11 +37,40 @@ interface Ethernet1/1
   ip address 10.1.1.1/31
   no shutdown
 !
+interface Ethernet1/47
+  description server2:eth0
+  switchport
+  channel-group 10 mode active
+  no shutdown
+!
 interface Ethernet1/48
   description server1:eth0
   switchport
   switchport access vlan 100
   spanning-tree port type edge
+  no shutdown
+!
+interface Ethernet1/49
+  description leaf2:Ethernet1/49
+  switchport
+  switchport mode trunk
+  channel-group 100 mode active
+  no shutdown
+!
+interface port-channel10
+  description server2 lag
+  switchport
+  switchport access vlan 100
+  lacp min-links 1
+  vpc 10
+  no shutdown
+!
+interface port-channel100
+  description vpc peer-link
+  switchport
+  switchport mode trunk
+  spanning-tree port type network
+  vpc peer-link
   no shutdown
 !
 interface Vlan100

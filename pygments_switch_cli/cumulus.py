@@ -43,12 +43,13 @@ SHARED_OPTIONS = (
 
 #: NCLU vocabulary.  ``net`` exposes a few objects NVUE renamed.
 NCLU_OPTIONS = SHARED_OPTIONS + (
-    "lnv", "mstpctl", "vlan-aware", "vrr",
+    "lnv", "mstpctl", "slaves", "vlan-aware", "vrr",
 )
 
 #: NVUE object paths.
 NVUE_OPTIONS = SHARED_OPTIONS + (
-    "breakout", "ecmp", "fec", "l2vpn-evpn", "linklocal", "mlag",
+    "breakout", "ecmp", "fec", "l2vpn-evpn", "lacp-bypass", "lacp-rate",
+    "linklocal", "mlag",
     "multipaths", "nve", "path-selection", "peer-ip", "platform", "qos",
     "rule", "sid", "single-vxlan-device", "svi", "system", "untagged",
     "vlan-id",

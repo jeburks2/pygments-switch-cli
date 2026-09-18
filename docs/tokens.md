@@ -38,6 +38,23 @@ interface Ethernet48
 The `vlan` on line 1 is a context keyword (`.kn`); the `vlan` on line 5 is an
 option keyword (`.nb`). Same word, different token, because of where it sits.
 
+`port-channel` is read the same way. Followed immediately by a number it
+names an interface (`.nf`); on its own it is the option keyword that
+configures the group (`.nb`):
+
+```eos
+interface Port-Channel10
+   port-channel min-links 1
+!
+show interface port-channel 10
+```
+
+Lines 1 and 4 name the same interface, once glued and once spaced. Line 2
+configures it, so `port-channel` there is an option keyword. The spaced
+spelling counts as a name only after `interface`, `interfaces` or `range`:
+without that anchor, the `vlan 100` in `switchport access vlan 100` would
+look exactly like one too.
+
 ## Pasted sessions
 
 Prompts are recognized in both the network and Linux styles, so a snippet

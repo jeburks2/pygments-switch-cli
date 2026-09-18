@@ -6,6 +6,41 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-09-18
+
+### Added
+
+- Link aggregation vocabulary, which the lexers knew only as part of an
+  interface name: `port-channel`, `channel-group`, `min-links`,
+  `port-priority`, `fallback`, `interfaces` and `timeout` are shared words
+  now, the LACP rate values `fast`, `normal` and `slow` are constants, and
+  each platform gained its own: `fields` and the `src-mac`/`dst-mac`/
+  `src-ip`/`dst-ip` hash fields on EOS, `force`, `src-dst`, `ip-l4port`,
+  `rotate`, `asymmetric`, `max-bundle`, `suspend-individual` and
+  `graceful-convergence` on NX-OS, `lacp-rate` and `lacp-bypass` on NVUE,
+  `slaves` on NCLU.
+- `interface_reference()`, a rule for an interface named in the tail of a
+  line rather than at its start.
+- Port-channel, MLAG and vPC configuration in the EOS, NX-OS, NCLU and NVUE
+  examples, which had none.
+
+### Fixed
+
+- A bare `port-channel` -- the word with no number after it, as in
+  `port-channel load-balance fields mac dst-mac` or `port-channel min-links
+  2` -- was left as plain text, because the word existed only inside the
+  interface name patterns. Same for `channel-group` on the platforms whose
+  vocabulary did not list it.
+- An interface named away from the start of a line with a space before its
+  number -- `show interface port-channel 10`,
+  `show running-config interface ethernet 1/1` -- is highlighted as an
+  interface name. Only the line-initial form was recognized.
+- A pasted prompt with no space after it -- `leaf1#show version`, the form a
+  device echoes back and the form the token documentation shows -- left the
+  prompt as plain text and the whole command as a `#` comment. The prompt
+  pattern required a space or the end of the line after the prompt
+  character; it now also accepts the first letter of a command.
+
 ## [0.1.0] - 2026-09-17
 
 ### Added
@@ -20,5 +55,6 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `analyse_text` implementations so `guess_lexer` can identify a snippet from
   platform-specific markers such as `frr version` or `vlt-domain`.
 
-[Unreleased]: https://github.com/jeburks2/pygments-switch-cli/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/jeburks2/pygments-switch-cli/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/jeburks2/pygments-switch-cli/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/jeburks2/pygments-switch-cli/releases/tag/v0.1.0

@@ -52,6 +52,7 @@ __all__ = [
     "SwitchCLILexer",
     "interface_re",
     "interface_header",
+    "interface_reference",
     "keyword_rule",
     "named_object",
     "option_rule",
@@ -97,8 +98,16 @@ MAC = (
 #: Device prompts, so a snippet pasted straight out of a terminal still reads
 #: correctly.  Covers ``leaf1#``, ``leaf1(config-if-Et1)#`` and the Linux-style
 #: ``cumulus@leaf01:mgmt:~$`` prompt used by Cumulus Linux and SONiC.
+#:
+#: The trailing lookahead allows the command to follow the prompt character
+#: with no space, which is how a device echoes it back: ``leaf1#show version``.
+#: A letter is as permissive as it gets -- every command in these CLIs starts
+#: with one -- because without some restriction any first word ending in ``#``
+#: would read as a prompt.  Requiring a space, as this once did, left the
+#: whole echoed line to the ``#`` comment rule instead.
 PROMPT = (
-    r"^(?:[\w.-]+@[\w.-]+:\S*[#$]|[\w.-]+(?:\([^)]*\))?[>#])(?=[ \t]|$)"
+    r"^(?:[\w.-]+@[\w.-]+:\S*[#$]|[\w.-]+(?:\([^)]*\))?[>#])"
+    r"(?=[ \t]|$|[A-Za-z])"
 )
 
 # --------------------------------------------------------------------------
@@ -115,8 +124,8 @@ NEGATIONS = ("default", "del", "delete", "no", "purge", "remove", "unset")
 CONSTANTS = (
     "absent", "active", "all", "any", "auto", "both", "default", "deny",
     "disable", "disabled", "down", "drop", "enable", "enabled", "false",
-    "forbidden", "inactive", "none", "off", "on", "permit", "present",
-    "true", "up", "yes",
+    "fast", "forbidden", "inactive", "none", "normal", "off", "on", "permit",
+    "present", "slow", "true", "up", "yes",
 )
 
 #: Networking vocabulary shared by every platform in this package.  Vendor
@@ -127,42 +136,43 @@ COMMON_OPTIONS = (
     "advertisement-interval", "aggregate-address", "allowas-in", "allowed",
     "always", "area", "arp", "as-path", "attribute", "authentication",
     "autoneg", "autonomous-system", "backup", "bandwidth", "bfd", "bgp",
-    "bpduguard", "bridge", "broadcast", "capability", "client", "community",
-    "community-list", "confederation", "connected", "cost", "dead-interval",
-    "default-information", "default-metric", "default-originate",
-    "destination", "dhcp", "distance", "distribute-list", "dns", "domain",
-    "domain-name", "dot1q", "downstream", "duplex", "ebgp-multihop", "echo",
-    "edge", "egress", "encapsulation", "encrypted", "eq", "established",
-    "evpn", "export", "extended", "external", "fabric", "fall-over",
-    "fast-external-failover", "filter", "flood", "flowcontrol", "forward",
-    "forwarding", "gateway", "ge", "graceful-restart", "group", "gt",
-    "hello-interval", "hold-time", "holdtime", "host", "host-reachability",
-    "id", "identifier", "igmp", "import", "ingress", "instance", "interface",
-    "interval", "ip", "ip-address", "ipv4", "ipv6", "isis", "keepalive", "key",
-    "l2vpn", "label", "lacp", "le", "level", "link", "lldp", "load-balance",
-    "local-as", "local-interface", "local-preference", "log",
-    "log-adjacency-changes", "log-neighbor-changes", "loopback", "lt", "mac",
-    "mac-address", "management", "match", "max-metric", "maximum",
-    "maximum-paths", "maximum-prefix", "maximum-routes", "md5", "member",
-    "members", "metric", "minimum", "mode", "mtu", "multicast", "multihop",
+    "bpduguard", "bridge", "broadcast", "capability", "channel-group",
+    "client", "community", "community-list", "confederation", "connected",
+    "cost", "dead-interval", "default-information", "default-metric",
+    "default-originate", "destination", "dhcp", "distance", "distribute-list",
+    "dns", "domain", "domain-name", "dot1q", "downstream", "duplex",
+    "ebgp-multihop", "echo", "edge", "egress", "encapsulation", "encrypted",
+    "eq", "established", "evpn", "export", "extended", "external", "fabric",
+    "fall-over", "fallback", "fast-external-failover", "filter", "flood",
+    "flowcontrol", "forward", "forwarding", "gateway", "ge",
+    "graceful-restart", "group", "gt", "hello-interval", "hold-time",
+    "holdtime", "host", "host-reachability", "id", "identifier", "igmp",
+    "import", "ingress", "instance", "interface", "interfaces", "interval",
+    "ip", "ip-address", "ipv4", "ipv6", "isis", "keepalive", "key", "l2vpn",
+    "label", "lacp", "le", "level", "link", "lldp", "load-balance", "local-as",
+    "local-interface", "local-preference", "log", "log-adjacency-changes",
+    "log-neighbor-changes", "loopback", "lt", "mac", "mac-address",
+    "management", "match", "max-metric", "maximum", "maximum-paths",
+    "maximum-prefix", "maximum-routes", "md5", "member", "members", "metric",
+    "min-links", "minimum", "mode", "mtu", "multicast", "multihop",
     "multipath", "name", "native", "neighbor", "network", "next-hop",
-    "next-hop-self", "no-prepend", "nssa", "origin", "ospf", "out",
-    "override", "passive", "passive-interface", "password", "path", "peer",
-    "peer-group", "peer-link", "pim", "point-to-point", "policy", "pool",
-    "port", "portfast", "preempt", "prefix", "prefix-list", "primary",
-    "priority", "profile", "protocol", "proxy-arp", "pvid", "range", "rate",
-    "rd", "receive", "redistribute", "reference-bandwidth", "remote-as",
-    "replace-as", "retry", "rib", "root", "route", "route-map",
-    "route-reflector-client", "route-target", "router", "router-id", "routing",
-    "rp-address", "secondary", "security", "send", "send-community", "seq",
-    "server", "service-policy", "set", "severity", "shared", "shutdown",
-    "snooping", "soft-reconfiguration", "source", "source-interface", "speed",
-    "state", "static", "statistics", "sticky", "stub", "subnet",
-    "summary-address", "switchport", "sync", "table", "tag", "target", "tcp",
-    "template", "threshold", "timer", "timers", "traffic", "transport",
-    "trunk", "trust", "tunnel", "type", "udp", "unicast", "update-source",
-    "uplink", "version", "vids", "vlan", "vni", "vrf", "vrrp", "vtep",
-    "vxlan", "weight",
+    "next-hop-self", "no-prepend", "nssa", "origin", "ospf", "out", "override",
+    "passive", "passive-interface", "password", "path", "peer", "peer-group",
+    "peer-link", "pim", "point-to-point", "policy", "pool", "port",
+    "port-channel", "port-priority", "portfast", "preempt", "prefix",
+    "prefix-list", "primary", "priority", "profile", "protocol", "proxy-arp",
+    "pvid", "range", "rate", "rd", "receive", "redistribute",
+    "reference-bandwidth", "remote-as", "replace-as", "retry", "rib", "root",
+    "route", "route-map", "route-reflector-client", "route-target", "router",
+    "router-id", "routing", "rp-address", "secondary", "security", "send",
+    "send-community", "seq", "server", "service-policy", "set", "severity",
+    "shared", "shutdown", "snooping", "soft-reconfiguration", "source",
+    "source-interface", "speed", "state", "static", "statistics", "sticky",
+    "stub", "subnet", "summary-address", "switchport", "sync", "table", "tag",
+    "target", "tcp", "template", "threshold", "timeout", "timer", "timers",
+    "traffic", "transport", "trunk", "trust", "tunnel", "type", "udp",
+    "unicast", "update-source", "uplink", "version", "vids", "vlan", "vni",
+    "vrf", "vrrp", "vtep", "vxlan", "weight",
 )
 
 #: Keywords whose remainder of line is free text rather than more keywords.
@@ -203,6 +213,23 @@ def interface_re(names: Iterable[str], bare: Iterable[str] = ()) -> str:
     return WORD_START + r"(?:" + "|".join(parts) + r")" + WORD_END
 
 
+def _spaced_interface(names: Iterable[str], bare: Iterable[str] = ()) -> str:
+    """Interface identifier that tolerates one space before the number.
+
+    Dell OS10 and the interactive form of most CLIs accept a space between the
+    interface type and its number, which :func:`interface_re` rejects on
+    purpose.  This pattern is only safe where a preceding keyword such as
+    ``interface`` says that what follows names an interface: without one,
+    ``vlan 100`` in ``switchport access vlan 100`` would match it.
+    """
+    alt = _alternation(names)
+    bare_alt = rf"|(?:{_alternation(bare)})(?:\.\d+)?" if bare else ""
+    return (
+        rf"(?:(?:{alt})[ \t]?\d+(?:s\d+)?(?:[/:]\d+(?:s\d+)?)*(?:\.\d+)?"
+        rf"(?:-[\d/:]+)?){bare_alt}"
+    )
+
+
 def interface_header(
     names: Iterable[str],
     keywords: Iterable[str] = ("interface", "range"),
@@ -210,19 +237,36 @@ def interface_header(
 ) -> Rule:
     """Rule for a context line such as ``interface ethernet 1/1/1``.
 
-    Dell OS10 and the interactive form of most CLIs accept a space between the
-    interface type and its number, which :func:`interface_re` rejects on
-    purpose.  Anchoring the relaxed pattern to a preceding ``interface``
-    keyword makes it safe.
+    Belongs in ``root``: the keyword opens an interface configuration
+    context, and the rule pushes ``line`` like every other ``root`` rule.
     """
-    alt = _alternation(names)
-    bare_alt = rf"|(?:{_alternation(bare)})(?:\.\d+)?" if bare else ""
     return (
         rf"{WORD_START}({_alternation(keywords)})([ \t]+)"
-        rf"((?:(?:{alt})[ \t]?\d+(?:s\d+)?(?:[/:]\d+(?:s\d+)?)*(?:\.\d+)?"
-        rf"(?:-[\d/:]+)?){bare_alt}){WORD_END}",
+        rf"({_spaced_interface(names, bare)}){WORD_END}",
         bygroups(Keyword.Namespace, Whitespace, Name.Function),
         "line",
+    )
+
+
+def interface_reference(
+    names: Iterable[str],
+    keywords: Iterable[str] = ("interface", "interfaces", "range"),
+    bare: Iterable[str] = (),
+) -> Rule:
+    """Rule for an interface named in the tail of a line.
+
+    The same spaced spelling :func:`interface_header` accepts also shows up
+    away from the start of a line -- ``show interface port-channel 10``,
+    ``show running-config interface ethernet 1/1`` -- where the keyword is an
+    option rather than a context, so this emits ``Name.Builtin`` for it and
+    changes no state.  It belongs in ``line`` ahead of :func:`option_rule`,
+    which would otherwise claim the keyword and leave the interface type as
+    plain text.
+    """
+    return (
+        rf"{WORD_START}({_alternation(keywords)})([ \t]+)"
+        rf"({_spaced_interface(names, bare)}){WORD_END}",
+        bygroups(Name.Builtin, Whitespace, Name.Function),
     )
 
 

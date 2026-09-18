@@ -18,6 +18,7 @@ from ._common import (
     SwitchCLILexer,
     interface_header,
     interface_re,
+    interface_reference,
     keyword_rule,
     named_object,
     option_rule,
@@ -99,6 +100,7 @@ class FRRLexer(SwitchCLILexer):
         ],
         "line": [
             include("prelude"),
+            interface_reference(INTERFACES, bare=BARE_INTERFACES),
             (interface_re(INTERFACES, bare=BARE_INTERFACES), Name.Function),
             option_rule(OPTIONS),
             inherit,

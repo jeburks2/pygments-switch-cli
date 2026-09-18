@@ -12,6 +12,7 @@ from ._common import (
     SwitchCLILexer,
     interface_header,
     interface_re,
+    interface_reference,
     keyword_rule,
     named_object,
     option_rule,
@@ -56,14 +57,15 @@ COMMANDS = (
 #: EOS vocabulary on top of the shared networking words in ``_common``.
 OPTIONS = (
     "accounting", "api", "authorization", "bgp-ls", "bpdufilter",
-    "channel-group", "console", "counters", "database", "dcbx",
-    "default-mode", "delay", "dhcpv6", "directed-broadcast", "ecmp",
-    "error-correction", "failover", "flow-spec", "garp", "http",
+    "console", "counters", "database", "dcbx", "default-mode", "delay",
+    "dhcpv6", "directed-broadcast", "dst-ip", "dst-mac", "ecmp",
+    "error-correction", "failover", "fields", "flow-spec", "garp", "http",
     "http-commands", "https", "igmpv3", "l2-protocol", "lag", "lanz",
     "learned", "listen", "mlag-peer", "model", "mst", "mstp", "multi-agent",
     "no-autostate", "number", "protocols", "ptp", "qsfp",
     "redistribute-internal", "reload-delay", "rfc5549", "rip",
-    "sparse-mode", "ssh", "storm-control", "tcam", "tracking", "trap",
+    "sparse-mode", "src-ip", "src-mac", "ssh", "storm-control", "tcam",
+    "tracking", "trap",
     "trigger", "ucmp", "udp-port", "unix-socket", "update", "virtual",
     "vxlan-source-interface", "watchdog", "xmpp",
 )
@@ -94,6 +96,7 @@ class AristaEOSLexer(SwitchCLILexer):
         ],
         "line": [
             include("prelude"),
+            interface_reference(INTERFACES),
             (interface_re(INTERFACES), Name.Function),
             option_rule(OPTIONS),
             inherit,

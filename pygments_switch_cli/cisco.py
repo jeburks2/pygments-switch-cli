@@ -12,6 +12,7 @@ from ._common import (
     SwitchCLILexer,
     interface_header,
     interface_re,
+    interface_reference,
     keyword_rule,
     named_object,
     option_rule,
@@ -55,14 +56,16 @@ COMMANDS = (
 
 #: NX-OS vocabulary on top of the shared networking words in ``_common``.
 OPTIONS = (
-    "anycast-gateway", "anycast-gateway-mac", "associate-vrf", "bash-shell",
-    "channel-group", "context", "direct", "fabric-forwarding",
-    "feature-set", "hsrp", "ingress-replication", "interface-vlan",
-    "ip-forward", "isolate", "l2", "l3", "limit-resource", "mcast-group",
+    "anycast-gateway", "anycast-gateway-mac", "associate-vrf", "asymmetric",
+    "bash-shell", "context", "direct", "fabric-forwarding",
+    "feature-set", "force", "graceful-convergence", "hsrp",
+    "ingress-replication", "interface-vlan", "ip-forward", "ip-l4port",
+    "isolate", "l2", "l3", "limit-resource", "max-bundle", "mcast-group",
     "mst", "nv", "nxapi", "overlay", "peer-gateway", "peer-keepalive",
-    "peer-switch", "peer-vtep", "ptp", "pvlan", "rise", "scp-server",
-    "sftp-server", "spine-anycast-gateway", "suppress-arp",
-    "system-priority", "tacacs+", "telnet", "vn-segment",
+    "peer-switch", "peer-vtep", "ptp", "pvlan", "rise", "rotate",
+    "scp-server", "sftp-server", "spine-anycast-gateway", "src-dst",
+    "suppress-arp", "suspend-individual", "system-priority", "tacacs+",
+    "telnet", "vn-segment",
     "vn-segment-vlan-based", "vpc", "vpc+", "vtp",
 )
 
@@ -92,6 +95,7 @@ class CiscoNXOSLexer(SwitchCLILexer):
         ],
         "line": [
             include("prelude"),
+            interface_reference(INTERFACES),
             (interface_re(INTERFACES), Name.Function),
             option_rule(OPTIONS),
             inherit,

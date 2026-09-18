@@ -5,6 +5,8 @@ nv set interface swp1 description spine1:swp1
 nv set interface swp1 link mtu 9216
 nv set interface swp1 ip address 10.1.1.1/31
 nv set interface swp49-50 bond member bond0
+nv set interface bond0 bond lacp-rate fast
+nv set interface bond0 bond mlag id 1
 nv set interface swp48 bridge domain br_default access 100
 nv set bridge domain br_default vlan 100
 nv set bridge domain br_default vlan 100 vni 10100

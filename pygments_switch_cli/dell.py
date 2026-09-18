@@ -12,6 +12,7 @@ from ._common import (
     SwitchCLILexer,
     interface_header,
     interface_re,
+    interface_reference,
     keyword_rule,
     named_object,
     option_rule,
@@ -51,7 +52,7 @@ COMMANDS = (
 
 #: OS10 vocabulary on top of the shared networking words in ``_common``.
 OPTIONS = (
-    "backup-destination", "channel-group", "discovery-interface", "ebgp",
+    "backup-destination", "discovery-interface", "ebgp",
     "evi", "flow-based", "hash-algorithm", "linuxadmin", "map",
     "member-interface", "mst", "mtu-name", "peer-routing", "policy-based",
     "rapid-pvst", "role", "sflow", "sha2-256-password", "tagged",
@@ -86,6 +87,7 @@ class DellOS10Lexer(SwitchCLILexer):
         ],
         "line": [
             include("prelude"),
+            interface_reference(INTERFACES),
             (interface_re(INTERFACES), Name.Function),
             option_rule(OPTIONS),
             inherit,

@@ -44,7 +44,7 @@ VERBS = ("add", "set", "enable", "startup", "start", "restart", "reload",
 OPTIONS = (
     "acl", "asic", "breakout", "brief", "buffer", "counterpoll", "counters",
     "dhcp_relay", "drop_counters", "ecn", "feature", "fec", "flow_counters",
-    "interfaces", "kdump", "kube", "mirror_session", "mmu", "muxcable",
+    "kdump", "kube", "mirror_session", "mmu", "muxcable",
     "namespace", "nat", "pfc", "platform", "portchannel", "priority-group",
     "qos", "queue", "reboot-cause", "runningconfiguration", "services",
     "sflow", "snmp", "startupconfiguration", "status", "subinterface",
